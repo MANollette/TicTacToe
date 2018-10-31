@@ -15,6 +15,8 @@ namespace TicTacToeTests
             Assert.IsTrue(board.move(2, 2, PieceType.PIECEX));
         }
 
+        
+
         [TestMethod]
         public void TestOCannotMoveFirst()
         {
@@ -69,6 +71,23 @@ namespace TicTacToeTests
             board.move(2, 5, PieceType.PIECEX);
             Assert.IsTrue(board.move(2, 2, 
                 PieceType.PIECEX));
+        }
+
+        [TestMethod]
+        public void TestXPlaced()
+        {
+            Board board = Board.create();
+            board.move(2, 2, PieceType.PIECEX);
+            Assert.IsTrue(board.getSquare(2, 2).getPiece().getPieceType() == PieceType.PIECEX);
+        }
+
+        [TestMethod]
+        public void TestOPlaced()
+        {
+            Board board = Board.create();
+            board.move(2, 2, PieceType.PIECEX);
+            board.move(1,1, PieceType.PIECEO);
+            Assert.IsTrue(board.getSquare(1,1).getPiece().getPieceType() == PieceType.PIECEO);
         }
     }
 }

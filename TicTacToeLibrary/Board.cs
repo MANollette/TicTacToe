@@ -17,7 +17,7 @@ namespace TicTacToeLibrary
     public class Board
     {
         public static int SIZE = 3;
-        private Square[,] squares = new Square[SIZE, SIZE];
+        Square[,] squares = new Square[SIZE, SIZE];
         private bool xTurn = true;
         private GameState state = GameState.ONGOING;
 
@@ -73,11 +73,15 @@ namespace TicTacToeLibrary
         private void executeMove(int x, int y)
         {
             var piece = new Piece(PieceType.PIECEX);
-            if (!BoardUtils.turnControl(true, PieceType.PIECEX)) piece = new Piece(PieceType.PIECEO);
+            if (!BoardUtils.turnControl(xTurn, PieceType.PIECEX)) piece = new Piece(PieceType.PIECEO);
             squares[x, y].placePiece(piece);
 
-            //checkAllRows();
-            //checkAllDiagonals();
+
+            
+            checkAllRows();
+            checkAllColumns();
+            checkAllDiagonals();
+            checkForDraw();
         }
 
         #region victoryChecks
@@ -86,28 +90,72 @@ namespace TicTacToeLibrary
             int xCount = 0;
             int oCount = 0;
 
-            for (int i = 0; i < 2; i++)
+            
+            for (int i = 0; i < 3; i++)
             {
                 xCount = 0;
                 oCount = 0;
-                for (int j = 0; j < 2; j++)
-                {
-                    if (squares[i, j].getPiece().getPieceType() == PieceType.PIECEX)
-                    {
-                        xCount++;
-                    }
-                    if (squares[i, j].getPiece().getPieceType() == PieceType.PIECEO)
-                    {
-                        oCount++;
-                    }
+            
 
-                    if (xCount == 3)
+                for (int j = 0; j < 3; j++)
+                {
+                    if (squares[i, j].getPiece() != null)
                     {
-                        state = GameState.XVICTORY;
+                        if (squares[i, j].getPiece().getPieceType() == PieceType.PIECEX)
+                        {
+                            xCount++;
+                        }
+                        if (squares[i, j].getPiece().getPieceType() == PieceType.PIECEO)
+                        {
+                            oCount++;
+                        }
+
+                        if (xCount == 3)
+                        {
+                            state = GameState.XVICTORY;
+                        }
+                        if (oCount == 3)
+                        {
+                            state = GameState.OVICTORY;
+                        }
                     }
-                    if (oCount == 3)
+                }
+            }
+        }
+
+        private void checkAllColumns()
+        {
+            int xCount = 0;
+            int oCount = 0;
+
+
+            for (int i = 0; i < 3; i++)
+            {
+                xCount = 0;
+                oCount = 0;
+
+
+                for (int j = 0; j < 3; j++)
+                {
+                    if (squares[j, i].getPiece() != null)
                     {
-                        state = GameState.OVICTORY;
+                        if (squares[j, i].getPiece().getPieceType() == PieceType.PIECEX)
+                        {
+                            xCount++;
+                        }
+                        if (squares[j, i].getPiece().getPieceType() == PieceType.PIECEO)
+                        {
+                            oCount++;
+                        }
+
+                        if (xCount == 3)
+                        {
+                            state = GameState.XVICTORY;
+                        }
+                        if (oCount == 3)
+                        {
+                            state = GameState.OVICTORY;
+                        }
                     }
                 }
             }
@@ -115,33 +163,66 @@ namespace TicTacToeLibrary
 
         private void checkAllDiagonals()
         {
-            int xCount = 0;
-            int oCount = 0;
-
-            for (int i = 1; i < 3; i++)
+            if (squares[0, 0].getPiece() != null && squares[1, 1].getPiece() != null && squares[2, 2].getPiece() != null)
             {
-                for (int j = 1; j < 3; j++)
+                if (squares[0, 0].getPiece().getPieceType() == PieceType.PIECEX)
                 {
-                    if (i == j && squares[j, i].getPiece().getPieceType() == PieceType.PIECEX)
+                    if (squares[1, 1].getPiece().getPieceType() == PieceType.PIECEX)
                     {
-                        xCount++;
+                        if (squares[2, 2].getPiece().getPieceType() == PieceType.PIECEX)
+                        {
+                            state = GameState.XVICTORY;
+                        }
                     }
-
-                    if (i == j && squares[j, i].getPiece().getPieceType() == PieceType.PIECEO)
+                }
+                if (squares[0, 0].getPiece().getPieceType() == PieceType.PIECEO)
+                {
+                    if (squares[1, 1].getPiece().getPieceType() == PieceType.PIECEO)
                     {
-                        oCount++;
-                    }
-
-                    if (xCount == 3)
-                    {
-                        state = GameState.XVICTORY;
-                    }
-                    if (oCount == 3)
-                    {
-                        state = GameState.OVICTORY;
+                        if (squares[2, 2].getPiece().getPieceType() == PieceType.PIECEO)
+                        {
+                            state = GameState.OVICTORY;
+                        }
                     }
                 }
             }
+            if (squares[2, 0].getPiece() != null && squares[1, 1].getPiece() != null && squares[0, 2].getPiece() != null)
+            {
+                if (squares[2, 0].getPiece().getPieceType() == PieceType.PIECEO)
+                {
+                    if (squares[1, 1].getPiece().getPieceType() == PieceType.PIECEO)
+                    {
+                        if (squares[0, 2].getPiece().getPieceType() == PieceType.PIECEO)
+                        {
+                            state = GameState.OVICTORY;
+                        }
+                    }
+                }
+                if (squares[2, 0].getPiece().getPieceType() == PieceType.PIECEX)
+                {
+                    if (squares[1, 1].getPiece().getPieceType() == PieceType.PIECEX)
+                    {
+                        if (squares[0, 2].getPiece().getPieceType() == PieceType.PIECEX)
+                        {
+                            state = GameState.XVICTORY;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void checkForDraw()
+        {
+            int count = 0;
+            foreach(Square s in squares)
+            {
+                if (s.getPiece() != null)
+                {
+                    count++;
+                }
+            }
+            if (count == 9)
+                state = GameState.DRAW;
         }
 
         public GameState getState()
